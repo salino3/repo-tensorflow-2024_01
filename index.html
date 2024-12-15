@@ -48,7 +48,7 @@
       ]);
       const x2 = tf.tensor2d([[0.1], [0.2], [0.5]]);
       async function tryAnswer() {
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < 100; i++) {
           const answer = await model.fit(x1, x2, {
             shuffle: true,
             epochs: 100,
@@ -56,7 +56,10 @@
           console.log(answer?.history.loss[0]);
         }
       }
-      tryAnswer();
+      tryAnswer().then(() => {
+        const exit = model.predict(x1);
+        exit.print();
+      });
     </script>
     <!-- <script type="module" src="./src/page4.js"></script> -->
     <!-- <script type="module" src="./src/app.js"></script> -->
