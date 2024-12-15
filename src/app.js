@@ -1,3 +1,4 @@
+//  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
 console.log("1)", tf.tensor1d([1, 2, 3, 4]));
 
 console.log(
