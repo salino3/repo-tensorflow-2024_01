@@ -10,9 +10,9 @@
 
   <body>
     <h1>Image classifier MobileNet</h1>
-    <img src="" crossorigin="anonymous" alt="Animal" id="imagen" /> <br />
+    <img src="" crossorigin="anonymous" alt="Image" id="imagen" /> <br />
     <br />
-    <button onclick="nextAnimal()">Next animal</button>
+    <button onclick="nextImage()">Next image</button>
     <p>
       This is a
       <strong>
@@ -67,7 +67,7 @@
         classifyImage(); // Clasifica la imagen después de que se cargue
       };
 
-      function nextAnimal() {
+      function nextImage() {
         if (imageNames.length - 1 <= num) {
           num = 0;
         } else {
