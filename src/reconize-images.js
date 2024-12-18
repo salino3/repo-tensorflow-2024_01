@@ -27,7 +27,7 @@
     </p>
 
     <script>
-      const imageNames = [
+    const imageNames = [
         "aguila-1",
         "aguila-2",
         "ant-1",

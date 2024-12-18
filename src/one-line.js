@@ -1,3 +1,6 @@
+//  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.js"></script>
 let x_pos = [];
 let y_pos = [];
 let w, b; // w: inclinación, b: altura desde abajo donde empieza el punto incial

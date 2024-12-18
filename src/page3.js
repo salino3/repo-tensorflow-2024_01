@@ -1,3 +1,4 @@
+//  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
 // Función para simular tirar dos dados y devolver la suma
 function rollDice() {
   const dice1 = Math.floor(Math.random() * 6) + 1;
