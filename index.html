@@ -48,28 +48,35 @@
 
       image.src = `./src/images/${imageNames[num]}.jpg`;
 
+      function classifyImage() {
+        classifier.predict(image, function (err, res) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log("Results:", res);
+          result.innerText = res[0].className;
+          probability.innerText = `${res[0].probability.toFixed(2)} %`;
+        });
+      }
+
+      // Evento para esperar que la imagen se cargue
+      image.onload = () => {
+        classifyImage(); // Clasifica la imagen después de que se cargue
+      };
+
       function nextAnimal() {
         if (imageNames.length - 1 <= num) {
           num = 0;
         } else {
-          num = num + 1;
+          num++;
         }
         image.src = `./src/images/${imageNames[num]}.jpg`;
-        console.log("Num", imageNames.length, num);
-        classifier.predict(image, function (err, res) {
-          // console.log("Res: ", res);
-          result.innerText = res[0].className;
-          probability.innerText = `${res[0].probability.toFixed(4)} %`;
-        });
       }
-      const classifier = ml5.imageClassifier("MobileNet", function () {
-        console.log("Modelo cargado");
-      });
 
-      classifier.predict(image, function (err, res) {
-        // console.log("Res: ", res);
-        result.innerText = res[0].className;
-        probability.innerText = `${res[0].probability.toFixed(4)} %`;
+      // Inicializar el clasificador
+      const classifier = ml5.imageClassifier("MobileNet", function () {
+        console.log("Model loaded successfully");
       });
     </script>
   </body>
