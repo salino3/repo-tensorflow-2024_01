@@ -5,22 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ml5</title>
 
-    <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.1.3/dist/ml5.min.js"></script>
   </head>
 
   <body>
     <h1>Image classifier MobileNet</h1>
-    <img
-      src="./src/images/gato-1.jpg"
-      crossorigin="anonymous"
-      alt="Animal"
-      id="imagen"
-    />
+    <img src={`/src/images/${imageNames[num]}.jpg`} crossorigin="anonymous"
+    alt="Animal" id="imagen" />
     <p>
       This is a
       <strong>
         <span id="result"> ... </span>
       </strong>
+      <br />
       <br />
       with a certainty of
       <strong>
@@ -28,6 +25,39 @@
       </strong>
     </p>
 
-    <script></script>
+    <script>
+      const imageNames = [
+        "aguila-1",
+        "aguila-2",
+        "ant-1",
+        "ant-2",
+        "gatito-1",
+        "gato-1",
+        "gato-2",
+        "gatos-2",
+        "perro-1",
+        "perro-2",
+        "perro-3",
+        "perros-1",
+        "perros-2",
+      ];
+
+      let num = 0;
+      const image = document.getElementById("imagen");
+      const result = document.getElementById("result");
+      const probability = document.getElementById("probability");
+
+      image.src = `./src/images/${imageNames[num]}.jpg`;
+
+      const classifier = ml5.imageClassifier("MobileNet", function () {
+        console.log("Modelo cargado");
+      });
+
+      classifier.predict(image, function (err, res) {
+        // console.log("Res: ", res);
+        result.innerText = res[0].className;
+        probability.innerText = `${res[0].probability.toFixed(4)} %`;
+      });
+    </script>
   </body>
 </html>
