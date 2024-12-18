@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Classificador imagenes con MobileNet p5.js</title>
+    <title>Image Classifier with MobileNet p5.js</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
@@ -14,6 +14,7 @@
       button {
         margin: 2px;
         padding: 4px;
+        cursor: pointer;
       }
       video {
         width: 300;
@@ -33,96 +34,99 @@
   </head>
 
   <body>
-    <h2>
-      Clasificador deimagenes usando el extractor de caracteristicas con
-      mobilenet
-    </h2>
-    <div id="contenedorVideo"></div>
+    <h2>Image Classifier using the feature extractor with MobileNet</h2>
+    <div id="videoContainer"></div>
     <h6>
-      <span id="estadoModelo">Cargando modelo base...</span> |
-      <span id="estadoVideo">Cargando video...</span>
+      <span id="modelStatus">Loading base model...</span> |
+      <span id="videoStatus">Loading video...</span>
     </h6>
-    <p><button id="botonBrocha">Agregar imagen de brocha</button></p>
-    <p><span id="sumaDeImagenesBrocha">0</span> imagenes de brocha</p>
-    <br /><button id="botonTaza">Agregar imagen de taza</button>
-    <p><span id="sumaDeImagenesTaza">0</span> imagenes de taza</p>
+    <p><button id="addBookImage">Add book image</button></p>
+    <p><span id="bookImageCount">0</span> book images</p>
+    <br /><button id="addCupImage">Add cup image</button>
+    <p><span id="cupImageCount">0</span> cup images</p>
     <br />
-    <button id="botonEntrenamiento">Entrenamiento</button
-    ><span id="perdida"></span>
+    <button id="trainButton">Training</button><span id="loss"></span>
     <br />
     <p>
-      <button id="botonPredecir">Iniciar la prediccion!</button><br />
-      Esto es: <span id="result">...</span>, Con una certeza del
-      <span id="confidence">...</span>.
+      <button id="startPrediction">Start prediction!</button><br />
+      This is: <span><strong id="result">...</strong></span
+      >, with a confidence of <span id="confidence">...</span>.
     </p>
     <script>
       let video;
       let featureExtractor;
-      let classificador;
-      let brochaImagenes = 0;
-      let tazaImagenes = 0;
-      let perdida;
+      let classifier;
+      let bookImages = 1;
+      let cupImages = 1;
+      let loss;
+
       function setup() {
         noCanvas();
         video = createCapture(VIDEO);
-        video.parent("contenedorVideo");
-        featureExtractor = ml5.featureExtractor("MobileNet", modeloListo);
-        classificador = featureExtractor.classification(video, videoListo);
-        configuraBotones();
+        video.parent("videoContainer");
+        featureExtractor = ml5.featureExtractor("MobileNet", modelReady);
+        classifier = featureExtractor.classification(video, videoReady);
+        setupButtons();
       }
-      function modeloListo() {
-        const estadoModelo = select("#estadoModelo");
-        if (estadoModelo) {
-          estadoModelo.html("modelo cargado");
+
+      function modelReady() {
+        const modelStatus = select("#modelStatus");
+        if (modelStatus) {
+          modelStatus.html("Model loaded");
         } else {
-          console.error("Element with id 'estadoModelo' not found.");
+          console.error("Element with id 'modelStatus' not found.");
         }
       }
-      function videoListo() {
-        const estadoModelo = select("#estadoModelo");
-        if (estadoModelo) {
-          estadoModelo.html("video cargado");
+
+      function videoReady() {
+        const modelStatus = select("#videoStatus");
+        if (modelStatus) {
+          modelStatus.html("Video loaded");
         } else {
-          console.error("Element with id 'estadoModelo' not found.");
+          console.error("Element with id 'modelStatus' not found.");
         }
       }
-      function configuraBotones() {
-        botonA = select("#botonBrocha");
-        botonA.mousePressed(function () {
-          classificador.addImage("brocha");
-          select("#sumaDeImagenesBrocha").html(++brochaImagenes);
+
+      function setupButtons() {
+        let buttonA = select("#addBookImage");
+        buttonA.mousePressed(function () {
+          classifier.addImage("book");
+          select("#bookImageCount").html(bookImages++);
         });
 
-        botonB = select("#botonTaza");
-        botonB.mousePressed(function () {
-          classificador.addImage("taza");
-          select("#sumaDeImagenesTaza").html(++tazaImagenes);
+        let buttonB = select("#addCupImage");
+        buttonB.mousePressed(function () {
+          classifier.addImage("cup");
+          select("#cupImageCount").html(cupImages++);
         });
 
-        botonEntrenamiento = select("#botonEntrenamiento");
-        botonEntrenamiento.mousePressed(function () {
-          classificador.train(function (valorPerdida) {
-            if (valorPerdida) {
-              perdida = valorPerdida;
-              select("#perdida").html("Perdida: " + perdida);
+        let trainButton = select("#trainButton");
+        trainButton.mousePressed(function () {
+          classifier.train(function (lossValue) {
+            if (lossValue) {
+              loss = lossValue;
+              select("#loss").html("Loss: " + loss);
             } else {
-              select("#perdida").html(
-                "Entrenamiento finalizado con una perdida de " + perdida
-              );
+              select("#loss").html("Training completed with a loss of " + loss);
             }
           });
         });
 
-        botonPredecir = select("#botonPredecir");
-        botonPredecir.mousePressed(function () {
-          classificador.classify(mostrarResultado);
+        let predictButton = select("#startPrediction");
+        predictButton.mousePressed(function () {
+          classifier.classify(showResult);
         });
       }
-      function mostrarResultado(err, res) {
-        select("#result").html(res[0].label);
+
+      function showResult(err, res) {
+        if (res[0].confidence < 0.8) {
+          select("#result").html("calculating...");
+        } else {
+          select("#result").html(res[0].label);
+        }
         select("#confidence").html(res[0].confidence.toFixed(2));
         setTimeout(() => {
-          classificador.classify(mostrarResultado);
+          classifier.classify(showResult);
         }, 200);
       }
     </script>
